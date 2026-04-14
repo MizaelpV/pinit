@@ -1,0 +1,108 @@
+/* content.css — injected into claude.ai */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   1. ACTION BAR PIN BUTTON
+   Inherits claude.ai's Tailwind classes (_ghost_10ocf_96 etc).
+   We only need a fallback stroke color for the SVG.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.pinit-pin-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   2. SELECTION POPUP
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+#pinit-selection-popup {
+  position: absolute;
+  z-index: 999999;
+  background: #1f2937;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+#pinit-selection-popup.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+#pinit-sel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #f9fafb;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s ease;
+}
+
+#pinit-sel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#pinit-sel-btn svg {
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: light) {
+  #pinit-selection-popup {
+    background: #111827;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   3. SCROLL-TO HIGHLIGHT
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes pinit-flash {
+  0%   { background-color: rgba(250, 204, 21, 0.45); }
+  100% { background-color: transparent; }
+}
+
+.pinit-highlight {
+  animation: pinit-flash 1.2s ease-out forwards;
+  border-radius: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   4. TOAST
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+#pinit-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  transform: translateX(calc(100% + 20px));
+  background: #1f2937;
+  color: #f9fafb;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 9999999;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+#pinit-toast.pinit-toast--visible {
+  opacity: 1;
+  transform: translateX(0);
+}

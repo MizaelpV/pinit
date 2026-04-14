@@ -1,0 +1,223 @@
+/* sidebar.css */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Ensure [hidden] always wins — author display: flex would otherwise override UA stylesheet */
+[hidden] { display: none !important; }
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  background: #131720;
+  color: #e2e8f0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────────*/
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px 11px;
+  background: #131720;
+  border-bottom: 1px solid #ffffff10;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* edge-to-edge: stretch full width regardless of body padding */
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.sidebar-logo { font-size: 17px; line-height: 1; }
+
+.sidebar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+
+.sidebar-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: #6d28d9;
+  color: #ddd6fe;
+  border-radius: 999px;
+  padding: 2px 8px;
+  min-width: 20px;
+  text-align: center;
+  display: none;
+}
+.sidebar-count:not(:empty) { display: block; }
+
+/* ── Pin list ─────────────────────────────────────────────────────────────────*/
+.pin-list {
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+/* ── Pin card ─────────────────────────────────────────────────────────────────*/
+.pin-card {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  background: #1e2433;
+  border: 1px solid #ffffff0f;
+  border-radius: 10px;
+  padding: 12px 12px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.pin-card:hover {
+  border-color: #ffffff25;
+  background: #232a3b;
+}
+
+/* ── Scroll-to flash animation ───────────────────────────────────────────────*/
+@keyframes card-flash {
+  0%   { border-color: #facc15; background: #2d2a1a; }
+  100% { border-color: #ffffff0f; background: #1e2433; }
+}
+.pin-card--flash {
+  animation: card-flash 1.2s ease-out forwards;
+}
+
+/* ── Action buttons (copy + remove) — visible on hover only ─────────────────*/
+.pin-card__actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.pin-card:hover .pin-card__actions { opacity: 1; }
+
+.pin-card__copy,
+.pin-card__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 5px;
+  background: #2d3548;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  flex-shrink: 0;
+}
+.pin-card__copy:hover,
+.pin-card__remove:hover {
+  background: #374261;
+  color: #e2e8f0;
+}
+.pin-card__copy.copied { color: #86efac; }
+
+/* ── Prompt ──────────────────────────────────────────────────────────────────*/
+.pin-card__prompt {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+  padding-right: 52px; /* avoid overlap with action buttons */
+  margin-bottom: 8px;
+}
+.pin-card__prompt em {
+  font-style: italic;
+  color: #475569;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────────*/
+.pin-card__divider {
+  height: 1px;
+  background: #ffffff10;
+  margin-bottom: 8px;
+}
+
+/* ── Response ────────────────────────────────────────────────────────────────*/
+.pin-card__body { margin-bottom: 4px; }
+
+.pin-card__body--collapsed .pin-card__response {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pin-card__response {
+  font-size: 13px;
+  color: #e2e8f0;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.pin-card__response p { margin: 0; }
+.pin-card__response p + p { margin-top: 6px; }
+
+/* ── Show more / less ────────────────────────────────────────────────────────*/
+.pin-card__expand {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding-top: 10px;
+  padding-left: 0;
+  transition: color 0.1s ease;
+}
+.pin-card__expand:hover { color: #c4b5fd; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────────*/
+.pin-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.pin-card__time {
+  font-size: 11px;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────────*/
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  width: 100%;
+}
+.empty-text {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+}
+.empty-text svg { color: #94a3b8; }

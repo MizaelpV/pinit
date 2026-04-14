@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="28" fill="#6366f1"/>
+  <g transform="translate(24, 16)" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pin body -->
+    <path d="M21 91 L40 72"/>
+    <path d="M37 10 L76 49"/>
+    <path d="M76 49 C82 55 78 68 68 72 L37 42 C33 32 42 20 52 18 Z" fill="white" stroke="white"/>
+    <path d="M37 10 C28 1 10 12 18 28 L37 42" fill="white" stroke="white"/>
+  </g>
+</svg>

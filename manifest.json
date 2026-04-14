@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "PinIt",
+  "version": "1.0.0",
+  "description": "Pin Claude responses and prompts for quick reference in a sidebar.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["content.js"],
+      "css": ["styles/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+P",
+        "mac": "Alt+Shift+P"
+      },
+      "description": "Open PinIt sidebar"
+    }
+  },
+  "action": {
+    "default_title": "PinIt — Open Sidebar",
+    "default_icon": {
+      "16": "icons/pin16.png",
+      "32": "icons/pin32.png",
+      "48": "icons/pin48.png",
+      "128": "icons/pin128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/pin16.png",
+    "32": "icons/pin32.png",
+    "48": "icons/pin48.png",
+    "128": "icons/pin128.png"
+  }
+}
