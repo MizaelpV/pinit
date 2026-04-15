@@ -172,10 +172,19 @@ function createActionBarEntry(turnEl) {
   return wrap;
 }
 
+function isAssistantActionBar(actionBarEl) {
+  const turn = findTurnContainer(actionBarEl);
+  if (!turn) return false;
+  if (turn.getAttribute('data-testid') === 'user-message') return false;
+  if (turn.querySelector('[data-testid="user-message"]')) return false;
+  return true;
+}
+
 function scanTurns() {
   // Use the exact aria-label we can see in the DOM
   document.querySelectorAll('[role="group"][aria-label="Message actions"]').forEach(group => {
     if (group.getAttribute(INJECTED_ATTR)) return;
+    if (!isAssistantActionBar(group)) return;
 
     // Find the flex row that directly contains the action buttons.
     // action-bar-copy is inside: flexRow > div.w-fit > button
