@@ -31,7 +31,7 @@ function pinSvg(size, { bg = '#ffffff', fg = '#6d28d9', radius } = {}) {
 
 // ── Promotional tile (440×280) ────────────────────────────────────────────────
 function promoSvg() {
-  const W = 440, H = 280;
+  const W = 440, H = 280, PAD = 40;
   const GRID = 20;
 
   // grid lines
@@ -41,40 +41,58 @@ function promoSvg() {
   for (let y = 0; y <= H; y += GRID)
     gridLines += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#00000008"/>`;
 
-  // icon box (top-left quadrant, vertically centered in top half)
-  const iconBoxSize = 64;
-  const iconPad     = 10;
-  const iconAreaX   = 36;
-  const iconAreaY   = 48;
+  // ── Layout constants ──────────────────────────────────────────────────────────
+  const ICON_SIZE    = 44;
+  const TITLE_SIZE   = 38;
+  const TAGLINE_SIZE = 14;
+  const TAGLINE_H    = Math.ceil(TAGLINE_SIZE * 1.3); // ~18px rendered height
+  const PILL_H       = 28;
+  const BADGE_H      = 24;
+  const BADGE_W      = 48;
 
-  // inline the pin SVG (no external reference needed — embed as nested SVG)
-  const pinInner = pinSvg(iconBoxSize, { bg: '#f5f3ff', fg: '#6d28d9', radius: 14 });
-  const pinBase64 = Buffer.from(pinInner).toString('base64');
+  // gaps between rows
+  const GAP_ICON_TAGLINE  = 12;
+  const GAP_TAGLINE_DIV   = 16;
+  const GAP_DIV_PILLS     = 16;
+  const GAP_PILLS_BADGE   = 16;
 
-  // pills
+  // total block height — used to vertically center
+  const blockH = ICON_SIZE
+               + GAP_ICON_TAGLINE + TAGLINE_H
+               + GAP_TAGLINE_DIV  + 1        // divider
+               + GAP_DIV_PILLS    + PILL_H
+               + GAP_PILLS_BADGE  + BADGE_H;
+
+  // ── Derived Y positions ───────────────────────────────────────────────────────
+  const iconY      = Math.round((H - blockH) / 2) + 25;
+  const taglineTop = iconY + ICON_SIZE + GAP_ICON_TAGLINE;
+  const dividerY   = taglineTop + TAGLINE_H + GAP_TAGLINE_DIV;
+  const pillsY     = dividerY + 1 + GAP_DIV_PILLS;
+  const badgeY     = pillsY + PILL_H + GAP_PILLS_BADGE;
+
+  // ── Pills: 3 × fixed width, fill content area exactly ────────────────────────
+  const contentW = W - PAD * 2; // 360px
+  const PILL_GAP = 12;
+  const PILL_W   = Math.floor((contentW - PILL_GAP * 2) / 3); // 112px
+  const PILL_RX  = 14;
+
   const pills = ['Pin any response', 'Instant sidebar', 'Scroll back'];
-  const pillH = 28, pillRx = 14, pillPad = 14;
   let pillsGroup = '';
-  let pillX = 36;
-  const pillY = 194;
-  pills.forEach(label => {
-    // estimate text width (rough: 7.5px per char at 13px)
-    const tw = label.length * 7.5;
-    const pw = tw + pillPad * 2;
+  pills.forEach((label, i) => {
+    const px = PAD + i * (PILL_W + PILL_GAP);
     pillsGroup += `
-    <rect x="${pillX}" y="${pillY}" width="${pw}" height="${pillH}" rx="${pillRx}"
+    <rect x="${px}" y="${pillsY}" width="${PILL_W}" height="${PILL_H}" rx="${PILL_RX}"
       fill="#f5f3ff" stroke="#ede9fe" stroke-width="1"/>
-    <text x="${pillX + pw / 2}" y="${pillY + 18}" text-anchor="middle"
+    <text x="${px + PILL_W / 2}" y="${pillsY + PILL_H / 2}" text-anchor="middle"
+      dominant-baseline="middle"
       font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
       font-size="13" fill="#6d28d9">${label}</text>`;
-    pillX += pw + 10;
   });
 
-  // "Free" badge
-  const badgeX = 36, badgeY = 238;
-  const badgeW = 52, badgeH = 24, badgeRx = 12;
-  // "For Claude.ai" text
-  const forX = badgeX + badgeW + 10;
+  // ── Icon embed ────────────────────────────────────────────────────────────────
+  const pinBase64 = Buffer.from(
+    pinSvg(ICON_SIZE, { bg: '#f5f3ff', fg: '#6d28d9', radius: 10 })
+  ).toString('base64');
 
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
@@ -85,37 +103,41 @@ function promoSvg() {
   <!-- grid -->
   <g>${gridLines}</g>
 
-  <!-- icon box -->
-  <image x="${iconAreaX}" y="${iconAreaY}" width="${iconBoxSize}" height="${iconBoxSize}"
+  <!-- icon -->
+  <image x="${PAD}" y="${iconY}" width="${ICON_SIZE}" height="${ICON_SIZE}"
     href="data:image/svg+xml;base64,${pinBase64}"/>
 
-  <!-- "PinIt" heading -->
-  <text x="${iconAreaX + iconBoxSize + 14}" y="${iconAreaY + 24}"
+  <!-- title — vertically centered with icon -->
+  <text x="${PAD + ICON_SIZE + 12}" y="${iconY + ICON_SIZE / 2}"
+    dominant-baseline="middle"
     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
-    font-size="28" font-weight="700" fill="#0f172a">PinIt</text>
+    font-size="${TITLE_SIZE}" font-weight="700" fill="#0f172a">PinIt</text>
 
   <!-- tagline -->
-  <text x="${iconAreaX + iconBoxSize + 14}" y="${iconAreaY + 48}"
+  <text x="${PAD}" y="${taglineTop + TAGLINE_SIZE}"
     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
-    font-size="14" fill="#64748b">Never lose a great Claude response again.</text>
+    font-size="${TAGLINE_SIZE}" fill="#64748b">Never lose a great Claude response again.</text>
 
   <!-- divider -->
-  <line x1="36" y1="172" x2="${W - 36}" y2="172" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="${PAD}" y1="${dividerY}" x2="${W - PAD}" y2="${dividerY}"
+    stroke="#e2e8f0" stroke-width="1"/>
 
   <!-- pills -->
   ${pillsGroup}
 
   <!-- Free badge -->
-  <rect x="${badgeX}" y="${badgeY}" width="${badgeW}" height="${badgeH}" rx="${badgeRx}"
+  <rect x="${PAD}" y="${badgeY}" width="${BADGE_W}" height="${BADGE_H}" rx="${BADGE_H / 2}"
     fill="#6d28d9"/>
-  <text x="${badgeX + badgeW / 2}" y="${badgeY + 16}" text-anchor="middle"
+  <text x="${PAD + BADGE_W / 2}" y="${badgeY + BADGE_H / 2}" text-anchor="middle"
+    dominant-baseline="middle"
     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
     font-size="12" font-weight="600" fill="#ddd6fe">Free</text>
 
   <!-- "For Claude.ai" -->
-  <text x="${forX}" y="${badgeY + 16}"
+  <text x="${PAD + BADGE_W + 10}" y="${badgeY + BADGE_H / 2}"
+    dominant-baseline="middle"
     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
-    font-size="13" fill="#94a3b8">For Claude.ai</text>
+    font-size="12" fill="#94a3b8">For Claude.ai</text>
 </svg>`;
 }
 
